@@ -56,10 +56,17 @@ const usuariosPatch = (req, res = response) =>{
     });
 }
 
-const usuariosDelete = (req, res = response) =>{
+const usuariosDelete = async(req, res = response) =>{
+    const {id} = req.params;
+
+    //Borrar físicamente
+    //const userDb = await User.findByIdAndDelete(id);
+
+    const userDb = await User.findByIdAndUpdate(id, {active: false});
+
     res.json({
-        msg: 'Delete API - controller'
-    });
+       id
+    }); 
 }
 
 module.exports = {
