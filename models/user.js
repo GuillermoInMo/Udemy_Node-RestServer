@@ -12,7 +12,7 @@ const UserSchema = Schema({
     },
     password: {
         type: String,
-        required: [true, 'La contraseña es obligatorio']
+        required: [true, 'La contraseña es obligatoria']
     },
     image: {
         type: String
@@ -33,7 +33,8 @@ const UserSchema = Schema({
 });
 
 UserSchema.methods.toJSON = function() {
-    const {__v, password, ...user} = this.toObject();
+    const {__v, password, _id, ...user} = this.toObject();
+    user.uid = _id;
     return user;
 }
 
