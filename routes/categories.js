@@ -1,7 +1,7 @@
 const { Router } = require ('express');
 const { check } = require ('express-validator');
 
-const { validateJWT, validarCampos } = require('../middlewares');
+const { validateJWT, validarCampos, validateAdminRole } = require('../middlewares');
 
 const { categoryExistsById } = require('../helpers/db-validators');
 
@@ -39,6 +39,7 @@ router.put('/:id', [
 
 router.delete('/:id', [
     validateJWT,
+    validateAdminRole,
     check('id', 'No es un Id válido').isMongoId(),
     check('id').custom(categoryExistsById),
     validarCampos

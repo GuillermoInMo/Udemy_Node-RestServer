@@ -10,7 +10,7 @@ const getCategories = async(req, res = response) => {
         Category.find(query)
                 .skip(Number(desde))
                 .limit(Number(limite))
-                .populate('user')
+                .populate('user', 'name')
     ]);
 
     res.json({
@@ -22,13 +22,7 @@ const getCategories = async(req, res = response) => {
 const getCategory = async(req, res = response) => {
     const { id } = req.params;
 
-    const categoria = await Category.findById(id).populate('user');
-
-    if(!categoria){
-        return res.status(400).json({
-            msg: `La categoria con el id ${id} no existe`
-        });
-    }
+    const categoria = await Category.findById(id).populate('user', 'name');
 
     if(!categoria.active){
         return res.status(400).json({
@@ -64,43 +58,21 @@ const postCategory = async(req, res = response) => {
 
 const putCategory = async(req, res = response) => {
     const { id } = req.params;
-
-    const categoryDb = await Category.findById(id);
     
-    if(!categoryDb){
-        return res.status(400).json({
-            msg: `La categoria con el id ${id} no existe`
-        })
-    }
+    const { active, user, ...data } = req.body;
 
-    if(!categoryDb.active){
-        return res.status(400).json({
-            msg: `La categoria ${categoryDb.name} está inactiva`
-        })
-    }
+    data.name = data.name.toUpperCase();
+    data.user = req.userReq._id;
 
-    const data = {
-        name: req.body.name,
-        user: req.userReq._id
-    }
+    const category = await Category.findByIdAndUpdate(id, data, {new: true});
 
-    const category = await Category.findByIdAndUpdate(id, data);
-
-    res.status(201).json(category);
+    res.json(category);
 }
 
 const deleteCategory = async(req, res = response) => {
-    const { role } = req.userReq;
-
-    if(role !== 'ADMIN_ROLE'){
-        return res.status(401).json({
-            msg: 'No cuenta con el permiso para realizar esta acción'
-        });
-    }
-
     const { id } = req.params;
     
-    const category = await Category.findByIdAndUpdate(id, {active: false});
+    const category = await Category.findByIdAndUpdate(id, {active: false}, {new: true});
 
     res.json(category);
 }
