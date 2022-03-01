@@ -1,6 +1,23 @@
 const { response } = require("express");
 const { Category } = require('../models');
- 
+
+//Obtener Categorias - paginado - total - populate(investigar, es para poblar las relaciones)
+const getCategories = async(req, res = response) => {
+    
+}
+
+//Obtener Categoria - populate {}
+const getCategory = async(req, res = response) => {
+    const { id } = req.params;
+    const categoria = await Category.findById(id).populate('user');
+    if(!categoria){
+        return res.status(400).json({
+            msg: `La categoria con el id ${id} no existe`
+        });
+    }
+    res.json(categoria);
+}
+
 const postCategory = async(req, res = response) => {
     const name = req.body.name.toUpperCase();
 
@@ -23,6 +40,12 @@ const postCategory = async(req, res = response) => {
     res.status(201).json(categoria);
 }
 
+//Actualizar categoria
+
+//Borrar categoria - estado a false
+
 module.exports = {
-    postCategory
+    getCategories,
+    getCategory,
+    postCategory,
 }
