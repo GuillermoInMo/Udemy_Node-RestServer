@@ -3,7 +3,21 @@ const { Category } = require('../models');
 
 //Obtener Categorias - paginado - total - populate(investigar, es para poblar las relaciones)
 const getCategories = async(req, res = response) => {
-    
+    const { imite = 5, desde = 0 } = req.query;
+    const query = {active: true};
+
+    const[total, users] = await Promise.all([
+        Category.countDocuments(query),
+        Category.find(query)
+                .skip(Number(desde))
+                .limit(Number(limite))
+                .populate('user')
+    ]);
+
+    res.json({
+        total,
+        users
+    });
 }
 
 //Obtener Categoria - populate {}

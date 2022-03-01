@@ -3,15 +3,15 @@ const { check } = require ('express-validator');
 
 const { validateJWT, validarCampos } = require('../middlewares');
 
-const { postCategory, getCategory } = require('../controllers/categories');
+const { getCategories, getCategory, postCategory } = require('../controllers/categories');
 const { categoryExistsById } = require('../helpers/db-validators');
 
 const router = Router();
 
 //obtener todas las categorias - publico
-router.get('/', (req, res) => {
-    console.log(res.json('get'));
-});
+router.get('/', [
+    
+], getCategories);
 
 //obtener una categoria - publico
 router.get('/:id', [
