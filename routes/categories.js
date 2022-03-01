@@ -8,7 +8,8 @@ const { categoryExistsById } = require('../helpers/db-validators');
 const { getCategories, 
         getCategory, 
         postCategory, 
-        putCategory } = require('../controllers/categories');
+        putCategory,
+        deleteCategory } = require('../controllers/categories');
 
 const router = Router();
 
@@ -28,7 +29,6 @@ router.post('/', [
     validarCampos
 ], postCategory);
 
-//Actualizar categoria - privado - cualquier persona con token válido
 router.put('/:id', [
     validateJWT,
     check('id', 'No es un Id válido').isMongoId(),
@@ -37,9 +37,11 @@ router.put('/:id', [
     validarCampos
 ], putCategory);
 
-//Borrar categoria - admin
-router.delete('/:id', (req, res) => {
-    console.log(res.json('delete'));
-});
+router.delete('/:id', [
+    validateJWT,
+    check('id', 'No es un Id válido').isMongoId(),
+    check('id').custom(categoryExistsById),
+    validarCampos
+], deleteCategory);
 
 module.exports = router;

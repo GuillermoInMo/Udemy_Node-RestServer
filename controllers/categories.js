@@ -30,6 +30,12 @@ const getCategory = async(req, res = response) => {
         });
     }
 
+    if(!categoria.active){
+        return res.status(400).json({
+            msg: `La categoria ${categoria.name} está inactiva`
+        })
+    }
+
     res.json(categoria);
 }
 
@@ -67,6 +73,12 @@ const putCategory = async(req, res = response) => {
         })
     }
 
+    if(!categoryDb.active){
+        return res.status(400).json({
+            msg: `La categoria ${categoryDb.name} está inactiva`
+        })
+    }
+
     const data = {
         name: req.body.name,
         user: req.userReq._id
@@ -74,16 +86,29 @@ const putCategory = async(req, res = response) => {
 
     const category = await Category.findByIdAndUpdate(id, data);
 
-    await category.save();
-
     res.status(201).json(category);
 }
 
-//Borrar categoria - estado a false
+const deleteCategory = async(req, res = response) => {
+    const { role } = req.userReq;
+
+    if(role !== 'ADMIN_ROLE'){
+        return res.status(401).json({
+            msg: 'No cuenta con el permiso para realizar esta acción'
+        });
+    }
+
+    const { id } = req.params;
+    
+    const category = await Category.findByIdAndUpdate(id, {active: false});
+
+    res.json(category);
+}
 
 module.exports = {
     getCategories,
     getCategory,
     postCategory,
-    putCategory
+    putCategory,
+    deleteCategory
 }
