@@ -3,24 +3,25 @@ const { check } = require ('express-validator');
 
 const { validateJWT, validarCampos } = require('../middlewares');
 
-const { getCategories, getCategory, postCategory } = require('../controllers/categories');
 const { categoryExistsById } = require('../helpers/db-validators');
+
+const { getCategories, 
+        getCategory, 
+        postCategory, 
+        putCategory } = require('../controllers/categories');
 
 const router = Router();
 
-//obtener todas las categorias - publico
 router.get('/', [
-    
+
 ], getCategories);
 
-//obtener una categoria - publico
 router.get('/:id', [
     check('id', 'No es un Id válido').isMongoId(),
     check('id').custom(categoryExistsById),
     validarCampos
 ], getCategory);
 
-//Crear categoria - privado - cualquier persona con token válido
 router.post('/', [
     validateJWT,
     check('name', 'El nombre es obligatorio').not().isEmpty(),
@@ -28,9 +29,13 @@ router.post('/', [
 ], postCategory);
 
 //Actualizar categoria - privado - cualquier persona con token válido
-router.put('/:id', (req, res) => {
-    console.log(res.json('put'));
-});
+router.put('/:id', [
+    validateJWT,
+    check('id', 'No es un Id válido').isMongoId(),
+    check('id').custom(categoryExistsById),
+    check('name', 'No hay información para actualizar').not().isEmpty(),
+    validarCampos
+], putCategory);
 
 //Borrar categoria - admin
 router.delete('/:id', (req, res) => {
