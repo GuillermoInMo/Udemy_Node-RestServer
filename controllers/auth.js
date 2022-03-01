@@ -67,7 +67,6 @@ const googleSignIn = async(req, res = response) => {
             };
             usuario = new User(data);
             await usuario.save();
-            console.log('Se ha guardado nuevo usuario', usuario)
         }
 
         //Si el usuario ya se encuentra en DB
